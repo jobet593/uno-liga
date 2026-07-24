@@ -34,16 +34,26 @@ git push -u origin main
 4. Este primer deploy va a funcionar a medias porque todavía no existe la base de datos
    (Vercel KV) — lo resolvemos en el siguiente paso.
 
-## 3. Conectar Vercel KV (la base de datos)
+## 3. Conectar tu base de datos Redis
 
-1. Dentro del proyecto ya importado en Vercel, ve a la pestaña **Storage**.
-2. Haz clic en **Create Database** → elige **KV** (Redis).
-3. Dale un nombre (por ejemplo `uno-kv`) y confirma.
-4. Vercel te va a preguntar a qué proyecto conectarla — selecciona `uno-campeonato`.
-   Esto agrega automáticamente las variables de entorno (`KV_REST_API_URL`,
-   `KV_REST_API_TOKEN`, etc.) al proyecto, no tienes que copiarlas a mano.
+Vercel KV ya no existe como producto; ahora las bases de datos Redis se manejan desde el
+**Marketplace** (por ejemplo, vía Redis Cloud o Upstash). Si ya tienes una base de datos
+Redis creada en tu cuenta de Vercel (de otro proyecto), **no necesitas crear otra** — el
+plan gratuito suele permitir solo una, pero una misma base puede conectarse a varios
+proyectos sin problema, siempre que cada proyecto use un prefijo de variable de entorno
+distinto para no pisarse los datos.
+
+1. Dentro del proyecto `uno-campeonato` en Vercel, ve a la pestaña **Storage**.
+2. Busca tu base de datos Redis existente en la lista y selecciona **Connect Project** (o
+   entra a la base de datos desde "Databases" de tu cuenta y haz lo mismo).
+3. En el diálogo de configuración:
+   - **Environments**: deja `Production, Preview`.
+   - **Custom Environment Variable Prefix**: escribe `UNO` (importante: distinto al que uses
+     en tus otros proyectos, para que no se mezclen las variables).
+4. Haz clic en **Connect Project**. Esto crea la variable de entorno `UNO_REDIS_URL` en tu
+   proyecto automáticamente.
 5. Ve a la pestaña **Deployments** y vuelve a desplegar (**Redeploy**) el último deploy para
-   que tome las nuevas variables de entorno.
+   que tome la nueva variable de entorno.
 
 ## 4. Usar la app
 
@@ -61,10 +71,10 @@ npm install
 npm run dev
 ```
 
-Para probar localmente con datos reales necesitas copiar las variables de entorno de Vercel
-KV a un archivo `.env.local` (mismo formato que `.env.example`). Vercel te las puede generar
-automáticamente con `vercel env pull .env.local` si instalas su CLI (`npm i -g vercel`) y
-haces `vercel link` primero.
+Para probar localmente con datos reales necesitas copiar la variable `UNO_REDIS_URL` de
+Vercel a un archivo `.env.local` (mismo formato que `.env.example`). Vercel te la puede
+generar automáticamente con `vercel env pull .env.local` si instalas su CLI
+(`npm i -g vercel`) y haces `vercel link` primero.
 
 ## Reglas de puntaje
 
