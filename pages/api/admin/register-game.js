@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { getState, setState, POINTS_BY_POSITION } from '../../../lib/kv';
+import { getState, setState, computePointsForGame } from '../../../lib/kv';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -10,31 +10,34 @@ export default async function handler(req, res) {
   if (!state) {
     return res.status(400).json({ error: 'No hay un campeonato activo.' });
   }
-  const positions = req.body?.positions;
-  if (!positions) {
-    return res.status(400).json({ error: 'Datos inválidos.' });
+
+  const order = req.body?.order;
+  if (!Array.isArray(order) || order.length < 2) {
+    return res.status(400).json({ error: 'Selecciona al menos 2 jugadores en orden de finalización.' });
+  }
+  if (new Set(order).size !== order.length) {
+    return res.status(400).json({ error: 'Cada jugador solo puede aparecer una vez en el orden.' });
+  }
+  const validIds = new Set(state.players.filter((p) => !p.hidden).map((p) => p.id));
+  if (!order.every((id) => validIds.has(id))) {
+    return res.status(400).json({ error: 'Uno o más jugadores seleccionados no son válidos.' });
   }
 
-  const ids = [1, 2, 3, 4].map((pos) => positions[pos]);
-  if (ids.some((id) => !id)) {
-    return res.status(400).json({ error: 'Selecciona un jugador para cada posición.' });
-  }
-  if (new Set(ids).size !== 4) {
-    return res.status(400).json({ error: 'Cada jugador solo puede ocupar una posición.' });
-  }
+  const pointsAwarded = computePointsForGame(order.length);
 
-  for (const pos of [1, 2, 3, 4]) {
-    const player = state.players.find((p) => p.id === positions[pos]);
+  order.forEach((playerId, index) => {
+    const player = state.players.find((p) => p.id === playerId);
     if (player) {
-      player.points += POINTS_BY_POSITION[pos];
+      player.points += pointsAwarded[index];
       player.gamesPlayed += 1;
     }
-  }
+  });
 
   state.games.push({
     id: randomUUID(),
     number: state.games.length + 1,
-    positions,
+    order,
+    pointsAwarded,
     playedAt: new Date().toISOString(),
   });
 

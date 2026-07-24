@@ -1,4 +1,4 @@
-import { getState, setState, POINTS_BY_POSITION } from '../../../lib/kv';
+import { getState, setState } from '../../../lib/kv';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -15,13 +15,13 @@ export default async function handler(req, res) {
     return res.status(404).json({ error: 'Partida no encontrada.' });
   }
 
-  for (const pos of [1, 2, 3, 4]) {
-    const player = state.players.find((p) => p.id === game.positions[pos]);
+  game.order.forEach((playerId, index) => {
+    const player = state.players.find((p) => p.id === playerId);
     if (player) {
-      player.points -= POINTS_BY_POSITION[pos];
+      player.points -= game.pointsAwarded[index];
       player.gamesPlayed = Math.max(0, player.gamesPlayed - 1);
     }
-  }
+  });
 
   state.games = state.games.filter((g) => g.id !== id);
   state.games.forEach((g, i) => {

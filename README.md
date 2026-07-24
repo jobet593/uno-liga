@@ -78,13 +78,25 @@ generar automáticamente con `vercel env pull .env.local` si instalas su CLI
 
 ## Reglas de puntaje
 
-| Posición | Puntos |
-|----------|--------|
-| 1.º      | 10     |
-| 2.º      | 7      |
-| 3.º      | 5      |
-| 4.º      | 3      |
-| 5.º o más| 0      |
+Los puntos de cada partida se calculan automáticamente según cuántos jugadores participaron
+en ella (no según el total del campeonato):
+
+- El último lugar siempre recibe **0 puntos**.
+- Entre el último lugar y el 3er lugar hay **1 punto de diferencia** por cada posición.
+- El 2do lugar recibe **2 puntos más** que el 3ro.
+- El 1er lugar recibe **3 puntos más** que el 2do.
+
+Ejemplos (primer lugar → último lugar):
+
+| Jugadores en la partida | Puntos por posición   |
+|--------------------------|------------------------|
+| 4                         | 6 – 3 – 1 – 0           |
+| 5                         | 7 – 4 – 2 – 1 – 0       |
+| 6                         | 8 – 5 – 3 – 2 – 1 – 0   |
+| 8                         | 10 – 7 – 5 – 4 – 3 – 2 – 1 – 0 |
+
+Al registrar una partida desde `/admin`, ordenas a todos los que jugaron esa ronda (1º al
+último) y la app calcula los puntos sola.
 
 Al llegar al número de partidas configurado al crear el campeonato, la app resalta
 automáticamente a los 4 jugadores con más puntos como finalistas.

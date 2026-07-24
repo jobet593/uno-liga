@@ -20,6 +20,21 @@ async function postJSON(url, body) {
   return data.state;
 }
 
+// Copia en el cliente de la misma fórmula del servidor (lib/kv.js),
+// solo para mostrar una vista previa de puntos mientras se arma el orden.
+function computePointsForGame(n) {
+  if (n <= 0) return [];
+  const byPosition = new Array(n + 1).fill(0);
+  byPosition[n] = 0;
+  for (let pos = n - 1; pos >= 3; pos--) {
+    byPosition[pos] = byPosition[pos + 1] + 1;
+  }
+  if (n >= 3) byPosition[2] = byPosition[3] + 2;
+  if (n >= 2) byPosition[1] = byPosition[2] + 3;
+  else if (n === 1) byPosition[1] = 0;
+  return byPosition.slice(1);
+}
+
 export default function AdminPage() {
   const [state, setState] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,9 +48,9 @@ export default function AdminPage() {
   const [newPlayerName, setNewPlayerName] = useState('');
   const [playerError, setPlayerError] = useState('');
 
-  // modal registrar partida
+  // modal registrar partida: lista ordenada de ids de jugadores (1º primero)
   const [showModal, setShowModal] = useState(false);
-  const [positions, setPositions] = useState({ 1: '', 2: '', 3: '', 4: '' });
+  const [order, setOrder] = useState([]);
   const [registerError, setRegisterError] = useState('');
 
   async function fetchState() {
@@ -91,13 +106,41 @@ export default function AdminPage() {
     setState(newState);
   }
 
+  function openRegisterModal() {
+    setOrder([]);
+    setRegisterError('');
+    setShowModal(true);
+  }
+
+  function addToOrder(id) {
+    setOrder((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }
+
+  function removeFromOrder(id) {
+    setOrder((prev) => prev.filter((x) => x !== id));
+  }
+
+  function moveInOrder(index, direction) {
+    setOrder((prev) => {
+      const next = [...prev];
+      const target = index + direction;
+      if (target < 0 || target >= next.length) return prev;
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  }
+
   async function handleRegisterGame() {
     setRegisterError('');
+    if (order.length < 2) {
+      setRegisterError('Agrega al menos 2 jugadores en orden de finalización.');
+      return;
+    }
     try {
-      const newState = await postJSON('/api/admin/register-game', { positions });
+      const newState = await postJSON('/api/admin/register-game', { order });
       setState(newState);
       setShowModal(false);
-      setPositions({ 1: '', 2: '', 3: '', 4: '' });
+      setOrder([]);
     } catch (e) {
       setRegisterError(e.message);
     }
@@ -168,7 +211,10 @@ export default function AdminPage() {
               Crear campeonato
             </button>
           </div>
-          <p className="footer-note">Puntos: 1º = 10, 2º = 7, 3º = 5, 4º = 3</p>
+          <p className="footer-note">
+            Puntos automáticos: el último lugar siempre 0, y sube según cuántos jugaron esa
+            partida.
+          </p>
         </div>
       </>
     );
@@ -176,6 +222,8 @@ export default function AdminPage() {
 
   const active = sortedActive(state);
   const finalStage = state.games.length >= state.totalGames;
+  const availablePlayers = active.filter((p) => !order.includes(p.id));
+  const previewPoints = computePointsForGame(order.length);
 
   return (
     <>
@@ -199,22 +247,33 @@ export default function AdminPage() {
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
+              disabled={showModal}
             />
-            <button className="btn-green" onClick={handleAddPlayer}>
+            <button className="btn-green" onClick={handleAddPlayer} disabled={showModal}>
               Agregar
             </button>
           </div>
           <div className="error-msg">{playerError}</div>
+          {showModal && (
+            <p className="empty-msg" style={{ padding: 0, textAlign: 'left' }}>
+              No se pueden agregar ni ocultar jugadores mientras registras una partida.
+            </p>
+          )}
         </div>
 
-        <Standings state={state} editable onHide={handleHide} onUnhide={handleUnhide} />
+        <Standings
+          state={state}
+          editable={!showModal}
+          onHide={handleHide}
+          onUnhide={handleUnhide}
+        />
 
         <div className="panel">
           <h2>
             <span className="bar"></span>Partidas
           </h2>
           <div className="full-btn-row">
-            <button className="btn-primary" onClick={() => setShowModal(true)}>
+            <button className="btn-primary" onClick={openRegisterModal}>
               Registrar nueva partida
             </button>
             <button className="btn-ghost" onClick={handleNewTournament}>
@@ -225,7 +284,10 @@ export default function AdminPage() {
 
         <GameHistory state={state} editable onDelete={handleDeleteGame} />
 
-        <p className="footer-note">Puntos: 1º = 10, 2º = 7, 3º = 5, 4º = 3</p>
+        <p className="footer-note">
+          Puntos automáticos: el último lugar siempre 0, y sube según cuántos jugaron esa
+          partida.
+        </p>
         <p className="admin-link-note">
           <a href="/">Ver la vista pública ↗</a>
         </p>
@@ -236,24 +298,72 @@ export default function AdminPage() {
           <div className="modal">
             <h2>Registrar partida #{state.games.length + 1}</h2>
             <p className="sub">
-              Elige quién quedó en cada posición. Solo el 1º al 4º lugar suman puntos.
+              Toca a los jugadores en el orden en que terminaron (1º primero, hasta el
+              último). Los puntos se calculan solos según cuántos participaron.
             </p>
-            {[1, 2, 3, 4].map((pos) => (
-              <div className="pos-row" key={pos}>
-                <div className={`pos-badge p${pos}`}>{pos}º</div>
-                <select
-                  value={positions[pos]}
-                  onChange={(e) => setPositions({ ...positions, [pos]: e.target.value })}
-                >
-                  <option value="">— Selecciona jugador —</option>
-                  {active.map((p) => (
-                    <option value={p.id} key={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+
+            {order.length > 0 && (
+              <div style={{ marginBottom: 14 }}>
+                {order.map((id, index) => {
+                  const player = state.players.find((p) => p.id === id);
+                  return (
+                    <div className="pos-row" key={id}>
+                      <div
+                        className={`pos-badge ${index === 0 ? 'p1' : index === 1 ? 'p2' : index === 2 ? 'p3' : index === 3 ? 'p4' : ''}`}
+                        style={index > 3 ? { background: '#5A5A52' } : undefined}
+                      >
+                        {index + 1}º
+                      </div>
+                      <div style={{ flex: 1, fontWeight: 600, fontSize: 14 }}>
+                        {player ? player.name : '(jugador)'}
+                      </div>
+                      <div style={{ fontWeight: 800, fontSize: 14, minWidth: 28, textAlign: 'right' }}>
+                        {previewPoints[index]}
+                      </div>
+                      <button
+                        className="btn-ghost btn-sm"
+                        onClick={() => moveInOrder(index, -1)}
+                        disabled={index === 0}
+                        title="Subir"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        className="btn-ghost btn-sm"
+                        onClick={() => moveInOrder(index, 1)}
+                        disabled={index === order.length - 1}
+                        title="Bajar"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        className="hide-btn"
+                        onClick={() => removeFromOrder(id)}
+                        title="Quitar"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
+            )}
+
+            {availablePlayers.length > 0 && (
+              <>
+                <label style={{ margin: '0 0 8px' }}>
+                  Toca para agregar al orden (siguiente puesto: {order.length + 1}º)
+                </label>
+                <div className="full-btn-row">
+                  {availablePlayers.map((p) => (
+                    <button className="btn-blue btn-sm" key={p.id} onClick={() => addToOrder(p.id)}>
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
             <div className="error-msg">{registerError}</div>
             <div className="modal-actions">
               <button className="btn-ghost" onClick={() => setShowModal(false)}>

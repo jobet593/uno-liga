@@ -56,7 +56,8 @@ export default function PublicPage() {
             <Standings state={state} editable={false} />
             <GameHistory state={state} editable={false} />
             <p className="footer-note">
-              Se actualiza automáticamente · Puntos: 1º = 10, 2º = 7, 3º = 5, 4º = 3
+              Se actualiza automáticamente · El último lugar siempre 0 puntos, y sube según
+              cuántos jugaron cada partida
             </p>
           </>
         )}
