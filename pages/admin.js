@@ -29,8 +29,8 @@ function computePointsForGame(n) {
   for (let pos = n - 1; pos >= 3; pos--) {
     byPosition[pos] = byPosition[pos + 1] + 1;
   }
-  if (n >= 3) byPosition[2] = byPosition[3] + 2;
-  if (n >= 2) byPosition[1] = byPosition[2] + 3;
+  if (n >= 3) byPosition[2] = byPosition[3] + 1;
+  if (n >= 2) byPosition[1] = byPosition[2] + 2;
   else if (n === 1) byPosition[1] = 0;
   return byPosition.slice(1);
 }

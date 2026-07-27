@@ -83,17 +83,17 @@ en ella (no según el total del campeonato):
 
 - El último lugar siempre recibe **0 puntos**.
 - Entre el último lugar y el 3er lugar hay **1 punto de diferencia** por cada posición.
-- El 2do lugar recibe **2 puntos más** que el 3ro.
-- El 1er lugar recibe **3 puntos más** que el 2do.
+- El 2do lugar recibe **1 punto más** que el 3ro.
+- El 1er lugar recibe **2 puntos más** que el 2do.
 
 Ejemplos (primer lugar → último lugar):
 
 | Jugadores en la partida | Puntos por posición   |
 |--------------------------|------------------------|
-| 4                         | 6 – 3 – 1 – 0           |
-| 5                         | 7 – 4 – 2 – 1 – 0       |
-| 6                         | 8 – 5 – 3 – 2 – 1 – 0   |
-| 8                         | 10 – 7 – 5 – 4 – 3 – 2 – 1 – 0 |
+| 4                         | 4 – 2 – 1 – 0           |
+| 5                         | 5 – 3 – 2 – 1 – 0       |
+| 6                         | 6 – 4 – 3 – 2 – 1 – 0   |
+| 8                         | 8 – 6 – 5 – 4 – 3 – 2 – 1 – 0 |
 
 Al registrar una partida desde `/admin`, ordenas a todos los que jugaron esa ronda (1º al
 último) y la app calcula los puntos sola.

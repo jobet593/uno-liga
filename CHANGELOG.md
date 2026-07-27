@@ -1,6 +1,16 @@
 # Historial de versiones
 
-## v4 (actual)
+## v5 (actual)
+- Ajuste al sistema de puntos ("podio suavizado"): el 1er lugar ahora recibe 2 puntos más
+  que el 2do (antes 3), y el 2do recibe 1 punto más que el 3ro (antes 2). El resto de la
+  escala (3er lugar hacia abajo) no cambia. Ver la tabla de ejemplos actualizada en el
+  `README.md`.
+- **Importante**: las partidas ya registradas ANTES de este cambio conservan los puntos que
+  ya se calcularon con la fórmula anterior (no se recalculan solas). Si quieres que toda la
+  tabla use la nueva fórmula desde el principio, la forma más simple es iniciar un nuevo
+  campeonato.
+
+## v4
 - Medallas 🥇🥈🥉 en la tabla de posiciones para el 1º, 2º y 3º lugar.
 - Aviso de confirmación ("✅ ¡Partida guardada!") al registrar una partida desde `/admin`,
   que aparece un par de segundos y desaparece solo.
