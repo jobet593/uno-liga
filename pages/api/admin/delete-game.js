@@ -15,10 +15,20 @@ export default async function handler(req, res) {
     return res.status(404).json({ error: 'Partida no encontrada.' });
   }
 
-  game.order.forEach((playerId, index) => {
+  const order =
+    Array.isArray(game.order) && game.order.length > 0
+      ? game.order
+      : game.positions
+      ? [1, 2, 3, 4].map((pos) => game.positions[pos]).filter(Boolean)
+      : [];
+  const pointsAwarded = Array.isArray(game.pointsAwarded)
+    ? game.pointsAwarded
+    : order.map(() => 0);
+
+  order.forEach((playerId, index) => {
     const player = state.players.find((p) => p.id === playerId);
     if (player) {
-      player.points -= game.pointsAwarded[index];
+      player.points -= pointsAwarded[index] || 0;
       player.gamesPlayed = Math.max(0, player.gamesPlayed - 1);
     }
   });

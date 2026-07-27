@@ -53,6 +53,14 @@ export default function AdminPage() {
   const [order, setOrder] = useState([]);
   const [registerError, setRegisterError] = useState('');
 
+  // aviso de confirmación al guardar una partida
+  const [toast, setToast] = useState('');
+
+  function showToast(message) {
+    setToast(message);
+    setTimeout(() => setToast(''), 2500);
+  }
+
   async function fetchState() {
     try {
       const res = await fetch('/api/state');
@@ -141,6 +149,7 @@ export default function AdminPage() {
       setState(newState);
       setShowModal(false);
       setOrder([]);
+      showToast('✅ ¡Partida guardada!');
     } catch (e) {
       setRegisterError(e.message);
     }
@@ -232,6 +241,7 @@ export default function AdminPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div className="wrap">
+        {toast && <div className="toast">{toast}</div>}
         <Header state={state} readOnly={false} />
 
         {finalStage && <FinalBanner state={state} finalists={active.slice(0, 4)} />}

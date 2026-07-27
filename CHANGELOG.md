@@ -1,6 +1,19 @@
 # Historial de versiones
 
-## v3 (actual)
+## v4 (actual)
+- Medallas 🥇🥈🥉 en la tabla de posiciones para el 1º, 2º y 3º lugar.
+- Aviso de confirmación ("✅ ¡Partida guardada!") al registrar una partida desde `/admin`,
+  que aparece un par de segundos y desaparece solo.
+- Filtro por jugador en el historial de partidas (disponible tanto en `/admin` como en la
+  vista pública), para ver solo las rondas en las que participó alguien en específico.
+
+## v3
+- **Corrección de fondo**: el servidor ahora "sanea" siempre los datos que lee de la base de
+  datos (rellena valores faltantes, corrige tipos, filtra registros corruptos) antes de
+  enviarlos a la app, sin importar de qué versión anterior vengan. Esto evita pantallas en
+  blanco por datos con una forma inesperada.
+- Se agregó una pantalla de emergencia (con botón para recargar o reiniciar el campeonato)
+  en vez de una página en blanco si llegara a ocurrir un error inesperado.
 - Nuevo sistema de puntuación: en vez de la escala fija 10/7/5/3, los puntos de cada partida
   se calculan automáticamente según cuántos jugadores participaron en ELLA (no el total del
   campeonato). El último lugar siempre recibe 0, y sube gradualmente hasta el 1º (ver

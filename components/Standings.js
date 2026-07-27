@@ -25,7 +25,7 @@ export default function Standings({ state, editable, onHide, onUnhide }) {
           const isFinalist = finalStage && i < 4;
           return (
             <div className={`player-card ${rankClass}`} key={p.id}>
-              <div className="rank-badge">{i + 1}</div>
+              <div className="rank-badge">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
               <div className="player-info">
                 <div className="name">
                   {p.name}
