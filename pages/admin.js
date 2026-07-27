@@ -4,6 +4,8 @@ import Header from '../components/Header';
 import FinalBanner from '../components/FinalBanner';
 import Standings, { sortedActive } from '../components/Standings';
 import GameHistory from '../components/GameHistory';
+import PointsChart from '../components/PointsChart';
+import PlayerStatsModal from '../components/PlayerStatsModal';
 
 const POLL_MS = 8000;
 
@@ -48,12 +50,16 @@ export default function AdminPage() {
   const [newPlayerName, setNewPlayerName] = useState('');
   const [playerError, setPlayerError] = useState('');
 
-  // modal registrar partida: lista ordenada de ids de jugadores (1º primero)
+  // modal registrar/editar partida
   const [showModal, setShowModal] = useState(false);
+  const [editingGame, setEditingGame] = useState(null); // null = registrar nueva; objeto = editando
   const [order, setOrder] = useState([]);
   const [registerError, setRegisterError] = useState('');
 
-  // aviso de confirmación al guardar una partida
+  // estadísticas de jugador
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+
+  // aviso de confirmación
   const [toast, setToast] = useState('');
 
   function showToast(message) {
@@ -115,7 +121,15 @@ export default function AdminPage() {
   }
 
   function openRegisterModal() {
+    setEditingGame(null);
     setOrder([]);
+    setRegisterError('');
+    setShowModal(true);
+  }
+
+  function openEditModal(game) {
+    setEditingGame(game);
+    setOrder(Array.isArray(game.order) ? [...game.order] : []);
     setRegisterError('');
     setShowModal(true);
   }
@@ -138,18 +152,25 @@ export default function AdminPage() {
     });
   }
 
-  async function handleRegisterGame() {
+  async function handleSaveGame() {
     setRegisterError('');
     if (order.length < 2) {
       setRegisterError('Agrega al menos 2 jugadores en orden de finalización.');
       return;
     }
     try {
-      const newState = await postJSON('/api/admin/register-game', { order });
-      setState(newState);
+      if (editingGame) {
+        const newState = await postJSON('/api/admin/edit-game', { id: editingGame.id, order });
+        setState(newState);
+        showToast('✅ ¡Partida actualizada!');
+      } else {
+        const newState = await postJSON('/api/admin/register-game', { order });
+        setState(newState);
+        showToast('✅ ¡Partida guardada!');
+      }
       setShowModal(false);
+      setEditingGame(null);
       setOrder([]);
-      showToast('✅ ¡Partida guardada!');
     } catch (e) {
       setRegisterError(e.message);
     }
@@ -276,7 +297,10 @@ export default function AdminPage() {
           editable={!showModal}
           onHide={handleHide}
           onUnhide={handleUnhide}
+          onSelectPlayer={setSelectedPlayerId}
         />
+
+        <PointsChart state={state} />
 
         <div className="panel">
           <h2>
@@ -292,7 +316,7 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <GameHistory state={state} editable onDelete={handleDeleteGame} />
+        <GameHistory state={state} editable onDelete={handleDeleteGame} onEdit={openEditModal} />
 
         <p className="footer-note">
           Puntos automáticos: el último lugar siempre 0, y sube según cuántos jugaron esa
@@ -303,10 +327,20 @@ export default function AdminPage() {
         </p>
       </div>
 
+      {selectedPlayerId && (
+        <PlayerStatsModal
+          state={state}
+          playerId={selectedPlayerId}
+          onClose={() => setSelectedPlayerId(null)}
+        />
+      )}
+
       {showModal && (
         <div className="overlay">
           <div className="modal">
-            <h2>Registrar partida #{state.games.length + 1}</h2>
+            <h2>
+              {editingGame ? `Editar partida #${editingGame.number}` : `Registrar partida #${state.games.length + 1}`}
+            </h2>
             <p className="sub">
               Toca a los jugadores en el orden en que terminaron (1º primero, hasta el
               último). Los puntos se calculan solos según cuántos participaron.
@@ -376,11 +410,17 @@ export default function AdminPage() {
 
             <div className="error-msg">{registerError}</div>
             <div className="modal-actions">
-              <button className="btn-ghost" onClick={() => setShowModal(false)}>
+              <button
+                className="btn-ghost"
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingGame(null);
+                }}
+              >
                 Cancelar
               </button>
-              <button className="btn-primary" onClick={handleRegisterGame}>
-                Guardar partida
+              <button className="btn-primary" onClick={handleSaveGame}>
+                {editingGame ? 'Guardar cambios' : 'Guardar partida'}
               </button>
             </div>
           </div>

@@ -6,7 +6,7 @@ export function sortedActive(state) {
     .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
 }
 
-export default function Standings({ state, editable, onHide, onUnhide }) {
+export default function Standings({ state, editable, onHide, onUnhide, onSelectPlayer }) {
   const [showHidden, setShowHidden] = useState(false);
   const active = sortedActive(state);
   const hidden = state.players.filter((p) => p.hidden);
@@ -26,7 +26,11 @@ export default function Standings({ state, editable, onHide, onUnhide }) {
           return (
             <div className={`player-card ${rankClass}`} key={p.id}>
               <div className="rank-badge">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
-              <div className="player-info">
+              <div
+                className="player-info"
+                onClick={() => onSelectPlayer && onSelectPlayer(p.id)}
+                style={onSelectPlayer ? { cursor: 'pointer' } : undefined}
+              >
                 <div className="name">
                   {p.name}
                   {isFinalist && <span className="finalist-tag">FINALISTA</span>}
@@ -56,7 +60,10 @@ export default function Standings({ state, editable, onHide, onUnhide }) {
             <div className="hidden-list">
               {hidden.map((p) => (
                 <div className="hidden-row" key={p.id}>
-                  <span>
+                  <span
+                    onClick={() => onSelectPlayer && onSelectPlayer(p.id)}
+                    style={onSelectPlayer ? { cursor: 'pointer' } : undefined}
+                  >
                     {p.name} · {p.points} pts
                   </span>
                   {editable && (

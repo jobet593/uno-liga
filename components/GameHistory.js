@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function GameHistory({ state, editable, onDelete }) {
+export default function GameHistory({ state, editable, onDelete, onEdit }) {
   const [filterId, setFilterId] = useState('all');
 
   const allGames = [...state.games].reverse();
@@ -73,9 +73,18 @@ export default function GameHistory({ state, editable, onDelete }) {
                 {parts.length > 0 ? parts : '(sin datos de esta partida)'}
               </div>
               {editable && (
-                <button className="del-game" title="Eliminar partida" onClick={() => onDelete(g.id)}>
-                  🗑
-                </button>
+                <>
+                  <button
+                    className="del-game"
+                    title="Editar partida"
+                    onClick={() => onEdit && onEdit({ ...g, order, pointsAwarded })}
+                  >
+                    ✏️
+                  </button>
+                  <button className="del-game" title="Eliminar partida" onClick={() => onDelete(g.id)}>
+                    🗑
+                  </button>
+                </>
               )}
             </div>
           );

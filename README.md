@@ -98,5 +98,15 @@ Ejemplos (primer lugar → último lugar):
 Al registrar una partida desde `/admin`, ordenas a todos los que jugaron esa ronda (1º al
 último) y la app calcula los puntos sola.
 
+## Otras funcionalidades
+
+- **Estadísticas por jugador**: toca el nombre de cualquier jugador (en `/admin` o en la
+  vista pública) para ver sus partidas jugadas, promedio de puntos, veces en el podio,
+  mejor/peor puesto y racha actual de victorias.
+- **Editar una partida**: desde `/admin`, el botón ✏️ en el historial permite corregir el
+  orden de una partida ya registrada sin tener que borrarla y crearla de nuevo.
+- **Gráfica de evolución de puntos**: muestra cómo fueron subiendo los puntos de cada
+  jugador partida a partida, tanto en `/admin` como en la vista pública.
+
 Al llegar al número de partidas configurado al crear el campeonato, la app resalta
 automáticamente a los 4 jugadores con más puntos como finalistas.

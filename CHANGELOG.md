@@ -1,6 +1,17 @@
 # Historial de versiones
 
-## v5 (actual)
+## v6 (actual)
+- **Estadísticas por jugador**: al tocar el nombre de un jugador (en `/admin` o en la vista
+  pública) se abre una ficha con partidas jugadas, promedio de puntos, veces en 1º/2º/3º
+  lugar, mejor/peor puesto y racha actual de victorias consecutivas.
+- **Editar partida**: nuevo botón ✏️ en el historial de partidas (junto al de eliminar) para
+  corregir el orden de una partida ya registrada, sin borrarla y volver a crearla. Revierte
+  los puntos anteriores y aplica los nuevos automáticamente.
+- **Gráfica de evolución de puntos**: nueva sección "Evolución de puntos" con una línea de
+  tiempo del acumulado de cada jugador, partida a partida (usa la librería `recharts`).
+- Nueva dependencia: `recharts` (agregada a `package.json`).
+
+## v5
 - Ajuste al sistema de puntos ("podio suavizado"): el 1er lugar ahora recibe 2 puntos más
   que el 2do (antes 3), y el 2do recibe 1 punto más que el 3ro (antes 2). El resto de la
   escala (3er lugar hacia abajo) no cambia. Ver la tabla de ejemplos actualizada en el

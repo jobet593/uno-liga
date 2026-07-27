@@ -4,12 +4,15 @@ import Header from '../components/Header';
 import FinalBanner from '../components/FinalBanner';
 import Standings, { sortedActive } from '../components/Standings';
 import GameHistory from '../components/GameHistory';
+import PointsChart from '../components/PointsChart';
+import PlayerStatsModal from '../components/PlayerStatsModal';
 
 const POLL_MS = 4000;
 
 export default function PublicPage() {
   const [state, setState] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null);
 
   async function fetchState() {
     try {
@@ -53,7 +56,8 @@ export default function PublicPage() {
             {state.games.length >= state.totalGames && (
               <FinalBanner state={state} finalists={sortedActive(state).slice(0, 4)} />
             )}
-            <Standings state={state} editable={false} />
+            <Standings state={state} editable={false} onSelectPlayer={setSelectedPlayerId} />
+            <PointsChart state={state} />
             <GameHistory state={state} editable={false} />
             <p className="footer-note">
               Se actualiza automáticamente · El último lugar siempre 0 puntos, y sube según
@@ -62,6 +66,14 @@ export default function PublicPage() {
           </>
         )}
       </div>
+
+      {state && selectedPlayerId && (
+        <PlayerStatsModal
+          state={state}
+          playerId={selectedPlayerId}
+          onClose={() => setSelectedPlayerId(null)}
+        />
+      )}
     </>
   );
 }
