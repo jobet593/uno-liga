@@ -1,6 +1,22 @@
 # Historial de versiones
 
-## v6 (actual)
+## v7 (actual)
+- **Finalizar campeonato**: nuevo botón "🏆 Finalizar campeonato" en `/admin` que marca el
+  campeonato como terminado con los resultados que se tengan hasta ese momento (no hace
+  falta jugar todas las partidas planeadas) y muestra un podio con el top 4. No bloquea la
+  edición — se puede seguir registrando/editando partidas después si hace falta.
+- **Historial de campeonatos**: "Nuevo campeonato" ahora archiva el campeonato actual en vez
+  de borrarlo. Nueva página `/historial` (pública) para consultar campeonatos pasados, su
+  campeón, y el detalle completo de tabla de posiciones y partidas de cada uno.
+- **Contraseña de administrador**: `/admin` y las rutas de la API de administración ahora
+  requieren iniciar sesión con una contraseña (configurada como variable de entorno
+  `ADMIN_PASSWORD` en Vercel, nunca en el código). Nueva página `/admin-login` y opción de
+  "Cerrar sesión" desde el panel.
+- Nuevos archivos: `middleware.js`, `pages/admin-login.js`, `pages/historial.js`,
+  `pages/api/login.js`, `pages/api/logout.js`, `pages/api/archive.js`,
+  `pages/api/admin/finish.js`, `components/ChampionPodium.js`.
+
+## v6
 - **Estadísticas por jugador**: al tocar el nombre de un jugador (en `/admin` o en la vista
   pública) se abre una ficha con partidas jugadas, promedio de puntos, veces en 1º/2º/3º
   lugar, mejor/peor puesto y racha actual de victorias consecutivas.

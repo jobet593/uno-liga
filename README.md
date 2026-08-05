@@ -110,3 +110,33 @@ Al registrar una partida desde `/admin`, ordenas a todos los que jugaron esa ron
 
 Al llegar al número de partidas configurado al crear el campeonato, la app resalta
 automáticamente a los 4 jugadores con más puntos como finalistas.
+
+## Finalizar campeonato y podio
+
+En cualquier momento (no hace falta llegar al número de partidas planeado) puedes hacer clic
+en **"🏆 Finalizar campeonato"** desde `/admin`. Esto no borra ni bloquea nada — solo marca el
+campeonato como finalizado y muestra un podio con los 4 mejores puntajes actuales, tanto en
+`/admin` como en la vista pública. Puedes seguir registrando o editando partidas después si
+lo necesitas.
+
+## Historial de campeonatos
+
+Cuando haces clic en **"Iniciar nuevo campeonato"**, el campeonato actual (jugadores,
+partidas, resultados) se guarda automáticamente en el historial en vez de borrarse. Puedes
+consultarlo en `/historial` (accesible para cualquiera con el link), donde se muestra el
+campeón de cada campeonato pasado y, si quieres, el detalle completo de su tabla de
+posiciones y partidas.
+
+## Contraseña de administrador
+
+`/admin` ahora requiere una contraseña para entrar (las rutas de la API de administración
+también quedan protegidas). Para configurarla:
+
+1. Ve a tu proyecto en Vercel → **Settings → Environment Variables**.
+2. Agrega una variable llamada `ADMIN_PASSWORD` con el valor que quieras usar como
+   contraseña.
+3. Selecciona los entornos **Production** y **Preview**, y guarda.
+4. Vuelve a desplegar (**Redeploy**) para que tome la nueva variable.
+
+Sin esta variable configurada, `/admin` seguirá pidiendo la contraseña pero ningún valor
+será aceptado — asegúrate de configurarla antes de compartir la app.

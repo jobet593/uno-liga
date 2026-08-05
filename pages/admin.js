@@ -6,6 +6,7 @@ import Standings, { sortedActive } from '../components/Standings';
 import GameHistory from '../components/GameHistory';
 import PointsChart from '../components/PointsChart';
 import PlayerStatsModal from '../components/PlayerStatsModal';
+import ChampionPodium from '../components/ChampionPodium';
 
 const POLL_MS = 8000;
 
@@ -179,12 +180,33 @@ export default function AdminPage() {
   async function handleNewTournament() {
     if (
       !confirm(
-        '¿Seguro que quieres iniciar un nuevo campeonato? Esto reemplazará el actual (se perderán los datos actuales).'
+        '¿Seguro que quieres iniciar un nuevo campeonato? El actual se guardará en el historial (Ver /historial) antes de limpiar la pantalla.'
       )
     )
       return;
     const newState = await postJSON('/api/admin/reset', {});
     setState(newState);
+  }
+
+  async function handleFinish() {
+    if (
+      !confirm(
+        '¿Finalizar el campeonato con los resultados actuales? Se mostrará el podio final. Podrás seguir registrando o editando partidas si lo necesitas.'
+      )
+    )
+      return;
+    try {
+      const newState = await postJSON('/api/admin/finish', {});
+      setState(newState);
+      showToast('🏆 ¡Campeonato finalizado!');
+    } catch (e) {
+      showToast(`❌ ${e.message}`);
+    }
+  }
+
+  async function handleLogout() {
+    await fetch('/api/logout', { method: 'POST' });
+    window.location.href = '/admin-login';
   }
 
   if (loading) {
@@ -245,6 +267,18 @@ export default function AdminPage() {
             Puntos automáticos: el último lugar siempre 0, y sube según cuántos jugaron esa
             partida.
           </p>
+          <p className="admin-link-note">
+            <a href="/historial">Historial de campeonatos</a> ·{' '}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+            >
+              Cerrar sesión
+            </a>
+          </p>
         </div>
       </>
     );
@@ -265,7 +299,11 @@ export default function AdminPage() {
         {toast && <div className="toast">{toast}</div>}
         <Header state={state} readOnly={false} />
 
-        {finalStage && <FinalBanner state={state} finalists={active.slice(0, 4)} />}
+        {state.finished ? (
+          <ChampionPodium state={state} />
+        ) : (
+          finalStage && <FinalBanner state={state} finalists={active.slice(0, 4)} />
+        )}
 
         <div className="panel">
           <h2>
@@ -310,8 +348,13 @@ export default function AdminPage() {
             <button className="btn-primary" onClick={openRegisterModal}>
               Registrar nueva partida
             </button>
+            {!state.finished && (
+              <button className="btn-blue" onClick={handleFinish}>
+                🏆 Finalizar campeonato
+              </button>
+            )}
             <button className="btn-ghost" onClick={handleNewTournament}>
-              Nuevo campeonato
+              Iniciar nuevo campeonato
             </button>
           </div>
         </div>
@@ -323,7 +366,10 @@ export default function AdminPage() {
           partida.
         </p>
         <p className="admin-link-note">
-          <a href="/">Ver la vista pública ↗</a>
+          <a href="/">Ver la vista pública ↗</a> · <a href="/historial">Historial de campeonatos</a> ·{' '}
+          <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
+            Cerrar sesión
+          </a>
         </p>
       </div>
 

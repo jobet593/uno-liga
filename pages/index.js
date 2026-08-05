@@ -6,6 +6,7 @@ import Standings, { sortedActive } from '../components/Standings';
 import GameHistory from '../components/GameHistory';
 import PointsChart from '../components/PointsChart';
 import PlayerStatsModal from '../components/PlayerStatsModal';
+import ChampionPodium from '../components/ChampionPodium';
 
 const POLL_MS = 4000;
 
@@ -53,8 +54,12 @@ export default function PublicPage() {
         ) : (
           <>
             <Header state={state} readOnly />
-            {state.games.length >= state.totalGames && (
-              <FinalBanner state={state} finalists={sortedActive(state).slice(0, 4)} />
+            {state.finished ? (
+              <ChampionPodium state={state} />
+            ) : (
+              state.games.length >= state.totalGames && (
+                <FinalBanner state={state} finalists={sortedActive(state).slice(0, 4)} />
+              )
             )}
             <Standings state={state} editable={false} onSelectPlayer={setSelectedPlayerId} />
             <PointsChart state={state} />
@@ -62,6 +67,9 @@ export default function PublicPage() {
             <p className="footer-note">
               Se actualiza automáticamente · El último lugar siempre 0 puntos, y sube según
               cuántos jugaron cada partida
+            </p>
+            <p className="admin-link-note">
+              <a href="/historial">Historial de campeonatos</a>
             </p>
           </>
         )}
