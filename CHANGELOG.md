@@ -1,5 +1,9 @@
 # Historial de versiones
 
+## v8 (actual)
+- Rediseño del podio de campeón: ahora se muestra como un podio real, con barras de
+  distinta altura para 1º, 2º, 3º y 4º lugar (en vez de una fila de chips).
+
 ## v7 (actual)
 - **Finalizar campeonato**: nuevo botón "🏆 Finalizar campeonato" en `/admin` que marca el
   campeonato como terminado con los resultados que se tengan hasta ese momento (no hace
