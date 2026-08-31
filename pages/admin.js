@@ -7,6 +7,8 @@ import GameHistory from '../components/GameHistory';
 import PointsChart from '../components/PointsChart';
 import PlayerStatsModal from '../components/PlayerStatsModal';
 import ChampionPodium from '../components/ChampionPodium';
+import QrModal from '../components/QrModal';
+import ExportButtons from '../components/ExportButtons';
 
 const POLL_MS = 8000;
 
@@ -59,6 +61,9 @@ export default function AdminPage() {
 
   // estadísticas de jugador
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+
+  // código QR de la vista pública
+  const [showQr, setShowQr] = useState(false);
 
   // aviso de confirmación
   const [toast, setToast] = useState('');
@@ -353,11 +358,20 @@ export default function AdminPage() {
                 🏆 Finalizar campeonato
               </button>
             )}
+            <button className="btn-ghost" onClick={() => setShowQr(true)}>
+              📱 Mostrar QR
+            </button>
             <button className="btn-ghost" onClick={handleNewTournament}>
               Iniciar nuevo campeonato
             </button>
           </div>
         </div>
+
+        <div className="panel">
+          <h2>
+            <span className="bar"></span>Exportar resultados
+          </h2>
+          <ExportButtons state={state} />
 
         <GameHistory state={state} editable onDelete={handleDeleteGame} onEdit={openEditModal} />
 
@@ -380,6 +394,8 @@ export default function AdminPage() {
           onClose={() => setSelectedPlayerId(null)}
         />
       )}
+
+      {showQr && <QrModal onClose={() => setShowQr(false)} />}
 
       {showModal && (
         <div className="overlay">

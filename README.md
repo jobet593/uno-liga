@@ -140,3 +140,19 @@ también quedan protegidas). Para configurarla:
 
 Sin esta variable configurada, `/admin` seguirá pidiendo la contraseña pero ningún valor
 será aceptado — asegúrate de configurarla antes de compartir la app.
+
+## Extras de la v9
+
+- **Confeti automático**: se dispara al mostrar el podio de campeón (al finalizar el
+  campeonato, o al abrir una vista donde ya está finalizado).
+- **Compartir podio como imagen**: botón "📤 Compartir podio" que genera una imagen PNG del
+  podio. En celular abre el menú nativo de compartir (WhatsApp, etc.); en escritorio la
+  descarga.
+- **Código QR**: botón "📱 Mostrar QR" en `/admin` que genera un código QR apuntando a la
+  vista pública, para que los jugadores escaneen en vez de que les dictes el link.
+- **Desempate automático**: si dos o más jugadores empatan en puntos totales, se ordenan por
+  más veces en 1er lugar; si siguen empatados, por más veces en 2do lugar; luego por más
+  veces en 3er lugar.
+- **Exportar resultados**: botones "📊 Exportar a Excel" y "📄 Exportar a PDF" en `/admin` (y
+  en cada campeonato del historial) que descargan la tabla de posiciones y el historial de
+  partidas.

@@ -1,9 +1,32 @@
 import { useState } from 'react';
 
 export function sortedActive(state) {
+  // Conteo de veces en 1º, 2º y 3º lugar de cada jugador, para el desempate.
+  const podiumCounts = {};
+  state.players.forEach((p) => {
+    podiumCounts[p.id] = { first: 0, second: 0, third: 0 };
+  });
+  (state.games || []).forEach((g) => {
+    if (!Array.isArray(g.order)) return;
+    g.order.forEach((pid, idx) => {
+      if (!podiumCounts[pid]) return;
+      if (idx === 0) podiumCounts[pid].first++;
+      else if (idx === 1) podiumCounts[pid].second++;
+      else if (idx === 2) podiumCounts[pid].third++;
+    });
+  });
+
   return [...state.players]
     .filter((p) => !p.hidden)
-    .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
+    .sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points;
+      const ca = podiumCounts[a.id] || { first: 0, second: 0, third: 0 };
+      const cb = podiumCounts[b.id] || { first: 0, second: 0, third: 0 };
+      if (cb.first !== ca.first) return cb.first - ca.first;
+      if (cb.second !== ca.second) return cb.second - ca.second;
+      if (cb.third !== ca.third) return cb.third - ca.third;
+      return a.name.localeCompare(b.name);
+    });
 }
 
 export default function Standings({ state, editable, onHide, onUnhide, onSelectPlayer }) {

@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v9 (actual)
+- 🎉 Confeti automático al mostrar el podio de campeón.
+- 📤 Botón para compartir el podio como imagen (PNG), con soporte para el menú nativo de
+  compartir en celulares.
+- 📱 Código QR en `/admin` apuntando a la vista pública.
+- ⚖️ Desempate automático en la tabla de posiciones: más 1ros, luego más 2dos, luego más
+  3ros lugares (antes solo se ordenaba por puntos y nombre).
+- 📊📄 Exportar resultados a Excel y PDF, tanto del campeonato activo como de cualquiera en
+  el historial.
+- Nuevas dependencias: `canvas-confetti`, `html-to-image`, `qrcode`, `xlsx`, `jspdf`,
+  `jspdf-autotable`.
+- Nuevos archivos: `components/QrModal.js`, `components/ExportButtons.js`,
+  `lib/exportUtils.js`.
+
 ## v8 (actual)
 - Rediseño del podio de campeón: ahora se muestra como un podio real, con barras de
   distinta altura para 1º, 2º, 3º y 4º lugar (en vez de una fila de chips).

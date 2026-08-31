@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Standings, { sortedActive } from '../components/Standings';
 import GameHistory from '../components/GameHistory';
+import ExportButtons from '../components/ExportButtons';
 
 export default function HistorialPage() {
   const [archive, setArchive] = useState([]);
@@ -78,6 +79,7 @@ export default function HistorialPage() {
                   <div style={{ marginTop: 14 }}>
                     <Standings state={t} editable={false} />
                     <GameHistory state={t} editable={false} />
+                    <ExportButtons state={t} />
                   </div>
                 )}
               </div>
