@@ -372,6 +372,7 @@ export default function AdminPage() {
             <span className="bar"></span>Exportar resultados
           </h2>
           <ExportButtons state={state} />
+        </div>
 
         <GameHistory state={state} editable onDelete={handleDeleteGame} onEdit={openEditModal} />
 
